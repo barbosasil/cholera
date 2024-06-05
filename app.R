@@ -30,7 +30,7 @@ library(shiny.i18n)
 library(lubridate)
 
 # File with translations
-i18n <- Translator$new(translation_json_path = "/home/urstudio/cholera/translation.json")
+i18n <- Translator$new(translation_json_path = "translation.json")
 
 # Change this to en
 i18n$set_translation_language("en")
@@ -263,10 +263,10 @@ server <- function(input, output, session) {
   date$semana=weekdays(date$dateweek)
   date=date[which(date$semana=="Monday" | date$semana=="segunda" | date$semana=="lunes" | date$semana=="lundi"),c("dateweek","ew")]
   
-  db = read.csv("/home/urstudio/cholera/database.csv",encoding = "UTF-8")
+  db = read.csv("database.csv",encoding = "UTF-8")
   db$date=as.Date(db$date)
   
-  db1 = read.csv("/home/urstudio/cholera/database_epicurve.csv")
+  db1 = read.csv("database_epicurve.csv")
   db1$date=as.Date(db1$Date)
   db1=db1[with(db1,order(date,decreasing = F)),]
   db1$cum=cumsum(db1$Suspected)
@@ -274,23 +274,23 @@ server <- function(input, output, session) {
   db1=merge(db1,date,by="ew",all.x=T)
   
   
-  db2 = read.csv("/home/urstudio/cholera/database_age.csv")
+  db2 = read.csv("database_age.csv")
   db2$date=as.Date(db2$date)
   
-  db3 = read.csv("/home/urstudio/cholera/database_age_conf.csv")
+  db3 = read.csv("database_age_conf.csv")
   db3$date=as.Date(db3$date)
   
   # database <- reactive({
-  #   data = read.csv("/home/urstudio/cholera/database.csv",encoding = "UTF-8")
+  #   data = read.csv("database.csv",encoding = "UTF-8")
   #   data$date=as.Date(data$date)
   # })
   
   output$logo <- renderPlot({
     x=switch(input$idiom,
-      "en" = "/home/urstudio/logo/paho_white_en.png",
-      "es" = "/home/urstudio/logo/paho_white_es.png",
-      "pt" = "/home/urstudio/logo/paho_white_pt.png",
-      "fr" = "/home/urstudio/logo/paho_white_fr.png"
+      "en" = "logo/paho_white_en.png",
+      "es" = "logo/paho_white_es.png",
+      "pt" = "logo/paho_white_pt.png",
+      "fr" = "logo/paho_white_fr.png"
     )
     ggplot() +
       background_image(readPNG(x)) +
@@ -872,7 +872,7 @@ server <- function(input, output, session) {
       "cholera_en.pptx" # default file name use by browser, it could be different
     },
     content = function(file) {
-      file.copy(file.path("/home/urstudio/cholera", "report_cholera_en.pptx"), file)
+      file.copy(file.path("report_cholera_en.pptx"), file)
     }
   )
   
@@ -881,7 +881,7 @@ server <- function(input, output, session) {
       "colera_sp.pptx" # default file name use by browser, it could be different
     },
     content = function(file) {
-      file.copy(file.path("/home/urstudio/cholera", "report_cholera_sp.pptx"), file)
+      file.copy(file.path("report_cholera_sp.pptx"), file)
     }
   )
   
@@ -890,7 +890,7 @@ server <- function(input, output, session) {
       "colera_pt.pptx" # default file name use by browser, it could be different
     },
     content = function(file) {
-      file.copy(file.path("/home/urstudio/cholera", "report_cholera_pt.pptx"), file)
+      file.copy(file.path("report_cholera_pt.pptx"), file)
     }
   )
   
@@ -899,7 +899,7 @@ server <- function(input, output, session) {
       "cholera_fr.pptx" # default file name use by browser, it could be different
     },
     content = function(file) {
-      file.copy(file.path("/home/urstudio/cholera/", "report_cholera_fr.pptx"), file)
+      file.copy(file.path("report_cholera_fr.pptx"), file)
     }
   )
 
