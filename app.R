@@ -287,10 +287,10 @@ server <- function(input, output, session) {
   
   output$logo <- renderPlot({
     x=switch(input$idiom,
-      "en" = "logo/paho_white_en.png",
-      "es" = "logo/paho_white_es.png",
-      "pt" = "logo/paho_white_pt.png",
-      "fr" = "logo/paho_white_fr.png"
+      "en" = "paho_white_en.png",
+      "es" = "paho_white_es.png",
+      "pt" = "paho_white_pt.png",
+      "fr" = "paho_white_fr.png"
     )
     ggplot() +
       background_image(readPNG(x)) +
