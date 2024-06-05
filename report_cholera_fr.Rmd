@@ -13,10 +13,10 @@ library(reshape2)
 
 Sys.setlocale("LC_TIME","fr_FR.UTF-8")
 
-db1=read.csv("/home/urstudio/cholera/database.csv");db1$date=as.Date(db1$date)
-db2=read.csv("/home/urstudio/cholera/database_age_conf.csv");db2$date=as.Date(db2$date)
-db3=read.csv("/home/urstudio/cholera/database_epicurve.csv");db3$date=as.Date(db3$Date)
-db4=read.csv("/home/urstudio/cholera/database_age.csv");db4$date=as.Date(db4$date)
+db1=read.csv("database.csv");db1$date=as.Date(db1$date)
+db2=read.csv("database_age_conf.csv");db2$date=as.Date(db2$date)
+db3=read.csv("database_epicurve.csv");db3$date=as.Date(db3$Date)
+db4=read.csv("database_age.csv");db4$date=as.Date(db4$date)
 
 db2$total=db2$Male+db2$Female
 
