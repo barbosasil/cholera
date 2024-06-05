@@ -1,0 +1,281 @@
+{
+   "cultural_date_format": "%d %B %Y",
+   "languages": [
+      "en",
+      "es",
+      "pt",
+      "fr"
+   ],
+   "translation": [
+      {
+         "en": "All",
+         "es": "Todas",
+         "pt": "Todas",
+         "fr": "Toute"
+      },
+      {
+         "en": "Cumulative",
+         "es": "Acumulativo",
+         "pt": "Cumulativo",
+         "fr": "Cumulatif"
+      },
+      {
+         "en": "Cholera resurgence in Hispaniola",
+         "es": "Resurgimiento del cólera en La Española",
+         "pt": "Ressurgimento da cólera em Hispaniola",
+         "fr": "Résurgence du choléra à Hispaniola"
+      },
+      {
+         "en": "Administrative level 1",
+         "es": "Nivel administrativo 1",
+         "pt": "Nível administrativo 1",
+         "fr": "Niveau administratif 1"
+      },
+      {
+         "en": "Confirmed and suspected cholera cases and deaths by administrative level 1.",
+         "es": "Casos y defunciones confirmados y sospechosos de cólera por nivel administrativo 1.",
+         "pt": "Casos e óbitos confirmados e suspeitos de cólera por nível administrativo 1.",
+         "fr": "Cas et décès confirmés et suspects de choléra par niveau administratif 1."
+      },
+      {
+         "en": "Suspected cholera cases and deaths by administrative level 1.",
+         "es": "Casos y defunciones sospechosos de cólera por nivel administrativo 1.",
+         "pt": "Casos e óbitos suspeitos de cólera por nível administrativo 1.",
+         "fr": "Cas et décès suspects de choléra par niveau administratif 1."
+      },
+      {
+         "en": "Confirmed cholera cases and deaths by administrative level 1.",
+         "es": "Casos y defunciones confirmados de cólera por nivel administrativo 1.",
+         "pt": "Casos e óbitos confirmados de cólera por nível administrativo 1.",
+         "fr": "Cas et décès confirmés de choléra par niveau administratif 1."
+      },
+      {
+         "en": "Suspected cholera cases by date.",
+         "es": "Casos sospechosos de cólera por fecha.",
+         "pt": "Casos suspeitos de cólera por data.",
+         "fr": "Cas suspects de choléra par date."
+      },
+      {
+         "en": "Suspected cholera cases by age group and sex.",
+         "es": "Casos sospechosos de cólera por grupo de edad y sexo.",
+         "pt": "Casos suspeitos de cólera por faixa etária e sexo.",
+         "fr": "Cas suspects de choléra par groupe d'âge et le sexe."
+      },
+      {
+         "en": "Confirmed cholera cases by age group and sex.",
+         "es": "Casos confirmados de cólera por grupo de edad y sexo.",
+         "pt": "Casos confirmados de cólera por faixa etária e sexo.",
+         "fr": "Cas confirmés de choléra par groupe d'âge et le sexe."
+      },
+      {
+         "en": "Undetermined: Suspect, probable or confirmed case without preliminary information on geographic location.",
+         "es": "Undetermined: Caso sospechoso, probable o confirmado sin información preliminar de ubicación geográfica.",
+         "pt": "Undetermined: Caso suspeito, provável ou confirmado sem informações preliminares sobre localização geográfica.",
+         "fr": "Undetermined: Cas suspect, probable ou confirmé sans informations préliminaires sur la localisation géographique."
+      },
+      {
+         "en": "Download presentation",
+         "es": "Descargar presentación",
+         "pt": "Baixar apresentação",
+         "fr": "Télécharger la présentation"
+      },
+      {
+         "en": "Date as of",
+         "es": "Hasta",
+         "pt": "Até",
+         "fr": "Données jusqu’au"
+      },
+      {
+         "en": "Date of",
+         "es": "Fecha de",
+         "pt": "Data de",
+         "fr": "Date de"
+      },
+      {
+         "en": "As of",
+         "es": "Hasta",
+         "pt": "Até",
+         "fr": "Au"
+      },
+      {
+         "en": "Day",
+         "es": "Día",
+         "pt": "Dia",
+         "fr": "Journée"
+      },
+      {
+         "en": " and ",
+         "es": " y ",
+         "pt": " e ",
+         "fr": " et "
+      },
+      {
+         "en": "Confirmed cases",
+         "es": "Casos confirmados",
+         "pt": "Casos confirmados",
+         "fr": "Cas confirmés"
+      },
+      {
+         "en": "Confirmed deaths",
+         "es": "Defunciones confirmadas",
+         "pt": "Óbitos confirmados",
+         "fr": "Décès confirmés"
+      },
+      {
+         "en": "Deaths",
+         "es": "Defunciones",
+         "pt": "Óbitos",
+         "fr": "Décès"
+      },
+      {
+         "en": "Suspected cases",
+         "es": "Casos sospechosos",
+         "pt": "Casos suspeitos",
+         "fr": "Cas suspects"
+      },
+      {
+         "en": "Suspected deaths",
+         "es": "Defunciones sospechosas",
+         "pt": "Óbitos suspeitos",
+         "fr": "Décès suspects"
+      },
+      {
+         "en": "Probable cases",
+         "es": "Casos probables",
+         "pt": "Casos prováveis",
+         "fr": "Cas probables"
+      },
+      {
+         "en": "Probable deaths",
+         "es": "Defunciones probables",
+         "pt": "Óbitos prováveis",
+         "fr": "Décès probables"
+      },
+      {
+         "en": "Confirmed",
+         "es": "Confirmado",
+         "pt": "Confirmado",
+         "fr": "Confirmés"
+      },
+      {
+         "en": "Probable",
+         "es": "Probable",
+         "pt": "Provável",
+         "fr": "Probable"
+      },
+      {
+         "en": "Suspected",
+         "es": "Sospechoso",
+         "pt": "Suspeito",
+         "fr": "Suspect"
+      },
+      {
+         "en": "Total cases",
+         "es": "Total de casos",
+         "pt": "Total de casos",
+         "fr": "Cas totaux"
+      },
+      {
+         "en": "Total of cases",
+         "es": "Total de casos",
+         "pt": "Total de casos",
+         "fr": "Cas totaux"
+      },
+      {
+         "en": "Male",
+         "es": "Masculino",
+         "pt": "Masculino",
+         "fr": "Homme"
+      },
+      {
+         "en": "Female",
+         "es": "Femenino",
+         "pt": "Feminino",
+         "fr": "Femme"
+      },
+      {
+         "en": "Age group",
+         "es": "Grupo de edad",
+         "pt": "Faixa etária",
+         "fr": "Groupe d'âge"
+      },
+      {
+         "en": "Classification",
+         "es": "Clasificación",
+         "pt": "Classificação",
+         "fr": "Classification"
+      },
+      {
+         "en": "Region of the Americas",
+         "es": "Región de las Américas",
+         "pt": "Região das Américas",
+         "fr": "Région des Amériques"
+      },
+      {
+         "en": "Country",
+         "es": "País",
+         "pt": "País",
+         "fr": "Pays"
+      },
+      {
+         "en": "Table",
+         "es": "Tabla",
+         "pt": "Tabela",
+         "fr": "Table"
+      },
+      {
+         "en": "Epicurve",
+         "es": "Epicurva",
+         "pt": "Curva epidêmica",
+         "fr": "Courbe épidémique"
+      },
+      {
+         "en": "Map",
+         "es": "Mapa",
+         "pt": "Mapa",
+         "fr": "Carte"
+      },
+      {
+         "en": "Epidemiological week",
+         "es": "Semana epidemiológica",
+         "pt": "Semana epidemiológica",
+         "fr": "Semaine épidémiologique"
+      },
+      {
+         "en": "Demographic Characteristics",
+         "es": "Características Demográficas",
+         "pt": "Características Demográficas",
+         "fr": "Caractéristiques Démographiques"
+      },
+      {
+         "en": "Official sources",
+         "es": "Fuentes oficiales",
+         "pt": "Fontes oficiais",
+         "fr": "Sources officielles"
+      },
+      {
+         "en": "Disclaimer",
+         "es": "Descargo de Responsabilidad",
+         "pt": "Aviso",
+         "fr": "Avertissement"
+      },
+      {
+         "en": "Date of report",
+         "es": "Fecha de notificación",
+         "pt": "Data de notificação",
+         "fr": "Date de signalement"
+      },
+      {
+         "en": "Number of cases",
+         "es": "Número de casos",
+         "pt": "Número de casos",
+         "fr": "Nombre de cas"
+      },
+      {
+         "en": "Date of onset of symptoms",
+         "es": "Fecha de inicio de síntomas",
+         "pt": "Data de início de sintomas",
+         "fr": "Date de signalement"
+      }
+   ]
+}

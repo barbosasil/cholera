@@ -1,0 +1,214 @@
+---
+output: 
+  powerpoint_presentation:
+    reference_doc: template.pptx
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,fig.align = "center")
+library(ggplot2)
+library(lubridate)
+library(reshape2)
+
+Sys.setlocale("LC_TIME","pt_BR.UTF8")
+
+db1=read.csv("/home/urstudio/cholera/database.csv");db1$date=as.Date(db1$date)
+db2=read.csv("/home/urstudio/cholera/database_age_conf.csv");db2$date=as.Date(db2$date)
+db3=read.csv("/home/urstudio/cholera/database_epicurve.csv");db3$date=as.Date(db3$Date)
+db4=read.csv("/home/urstudio/cholera/database_age.csv");db4$date=as.Date(db4$date)
+
+db2$total=db2$Male+db2$Female
+
+date=data.frame(dateweek=seq.Date(from=as.Date("2021-12-01"),to=Sys.Date(),by="day"))
+date$ew=paste0(epiweek(date$dateweek),".",epiyear(date$dateweek))
+date=date[which(weekdays(date$dateweek)=="domingo"),c("dateweek","ew")]
+
+db1$ew=paste0(epiweek(db1$date),".",epiyear(db1$date))
+db3$ew=paste0(epiweek(db3$date),".",epiyear(db3$date))
+
+db1=merge(db1,date,by="ew",all.x=T)
+db3=merge(db3,date,by="ew",all.x=T)
+
+db1.1=db1[which(db1$date<=max(db1[weekdays(db1$date)=="sábado",]$date)),]
+
+cases_var=round((sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" &  db1.1$dateweek==max(db1.1$dateweek),]$Confirmed.cases)-sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" & db1.1$dateweek==max(db1.1$dateweek)-7,]$Confirmed.cases))/sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" & db1.1$dateweek==max(db1.1$dateweek)-7,]$Confirmed.cases)*100,1)
+
+susp_var=round((sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" &  db1.1$dateweek==max(db1.1$dateweek),]$Suspected.cases)-sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" & db1.1$dateweek==max(db1.1$dateweek)-7,]$Suspected.cases))/sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" & db1.1$dateweek==max(db1.1$dateweek)-7,]$Suspected.cases)*100,1)
+
+death_var=round((sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" &  db1.1$dateweek==max(db1.1$dateweek),]$Confirmed.deaths)-sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" & db1.1$dateweek==max(db1.1$dateweek)-7,]$Confirmed.deaths))/sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" & db1.1$dateweek==max(db1.1$dateweek)-7,]$Confirmed.deaths)*100,1)
+
+max_date <- max(as.Date(db1$date))
+max_date_on_file <- format(max_date, format = "%d de %B de %Y", locale = "pt_BR")
+
+```
+
+---
+title: "Cólera"
+subtitle: "Até `r max_date_on_file
+`"
+
+---
+
+## Resumo da situação: Cólera em Haiti
+
+::: {.columns data-latex=""}
+::: {.column data-latex="{0.50\\textwidth}"}
+
+```{r echo=FALSE, fig.height=100, fig.width=11, fig.asp=0.6,  message=FALSE, warning=FALSE}
+
+ggplot(db3,aes(x=dateweek,y=Suspected))+
+  geom_bar(stat="identity",fill="#4472C4")+
+  theme_classic()+
+  theme(legend.position=c(0.8, 0.9))+
+  theme(axis.text.x = element_text(color = "grey20", size = 16, angle = 0, hjust = .5, vjust = .5, face = "plain"),
+        axis.text.y = element_text(color = "grey20", size = 16, angle = 0, hjust = 1, vjust = 0, face = "plain"),  
+        axis.title.x = element_text(color = "grey20", size = 20, angle = 0, hjust = .5, vjust = 0, face = "plain"),
+        axis.title.y = element_text(color = "grey20", size = 20, angle = 90, hjust = .5, vjust = .5, face = "plain"),
+        legend.text=element_text(size = 20),
+        text=element_text(size = 20),
+        title = element_text(size = 20),
+        plot.title = element_text(hjust = 0.5),
+        strip.text = element_text(size=20))+
+  labs(title=paste0("Casos suspeitos de cólera por semana epidemiológica, Haiti. \n Até ",format.Date(max(db3$date,na.rm=T),format="%d %b %Y")),x="Semana epidemiológica (início de sintomas)",y="Número de casos suspeitos",fill="")+
+  scale_fill_brewer(palette = "Set2")+
+  scale_x_date(date_breaks = "2 weeks",expand=c(0,0),date_labels = "SE%U")+
+  scale_y_continuous(expand = c(0,0))
+
+```
+
+
+:::
+::: {.column data-latex="{0.50\\textwidth}"}
+
+**Total de casos suspeitos:** `r db1[db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL" & db1$date==max(db1$date,na.rm=T),]$Suspected.cases`
+
+`r ifelse(susp_var<0,paste0("redução: ",susp_var,"%"),paste0("aumento: ",susp_var,"%"))`
+
+\
+**Total de casos confirmados:** `r db1[db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL" & db1$date==max(db1$date,na.rm=T),]$Confirmed.cases`
+
+`r ifelse(cases_var<0,paste0("redução: ",cases_var,"%"),paste0("aumento: ",cases_var,"%"))`
+
+\
+**Óbitos:** `r db1[db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL" & db1$date==max(db1$date,na.rm=T),]$Confirmed.deaths`
+
+`r ifelse(death_var<0,paste0("redução: ",death_var,"%"),paste0("aumento: ",death_var,"%"))`
+
+\
+**Taxa de letalidade (suspeitos):** `r paste0(round(db1[db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL" & db1$date==max(db1$date,na.rm=T),]$Confirmed.deaths/db1[db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL" & db1$date==max(db1$date,na.rm=T),]$Suspected.cases*100,1),"%")`
+
+**Taxa de letalidade (hospitalizados):** `r paste0(round(db1[db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL" & db1$date==max(db1$date,na.rm=T),]$Hospitalized.deaths/db1[db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL" & db1$date==max(db1$date,na.rm=T),]$Hospitalized.cases*100,1),"%")`
+
+\
+**Informação demográfica**
+
+- `r paste0(round(sum(db2[db2$date==max(db2$date),]$Male)/sum(db2[db2$date==max(db2$date),]$total)*100,0),"%")`  são homens
+
+- `r paste0(round(sum(db2[db2$date==max(db2$date) & (db2$Agegroup=="<1y" | db2$Agegroup=="1-4y" | db2$Agegroup=="5-9y" | db2$Agegroup=="10-14y" | db2$Agegroup=="15-19y"),]$total)/sum(db2[db2$date==max(db2$date),]$total)*100,0),"%")`  <20 anos
+
+:::
+:::
+
+## Informação demográfica
+
+```{r echo=FALSE, results='asis',ft.left=1.2, ft.top=1.7,fig.width=20, fig.height=8}
+df1=db4[db4$date==max(db4$date),c("Agegroup","Male","Female")]
+df1=reshape2::melt(df1,id="Agegroup")
+df1$Agegroup=factor(df1$Agegroup,levels=c("<1y","1-4y","5-9y","10-14y","15-19y","20-29y","30-39y","40-49y","50-59y","60-69y","70-79y","80y+"))
+
+
+df2=db2[db2$date==max(db2$date),c("Agegroup","Male","Female")]
+df2=reshape2::melt(df2,id="Agegroup")
+df2$Agegroup=factor(df2$Agegroup,levels=c("<1y","1-4y","5-9y","10-14y","15-19y","20-29y","30-39y","40-49y","50-59y","60-69y","70-79y","80y+"))
+
+df1$clas=1
+df2$clas=2
+
+df=rbind(df1,df2)
+df$clas=factor(df$clas,levels=c(1,2),labels=c("Casos suspeitos","Casos confirmados"))
+df$variable=ifelse(df$variable=="Male","Masculino","Feminino")
+df$Agegroup=factor(df$Agegroup,levels=c("<1y","1-4y","5-9y","10-14y","15-19y","20-29y","30-39y","40-49y","50-59y","60-69y","70-79y","80y+"),labels=c("<1 ano","1-4 anos","5-9 anos","10-14 anos","15-19 anos","20-29 anos","30-39 anos","40-49 anos","50-59 anos","60-69 anos","70-79 anos","80 anos ou mais"))
+
+ggplot(df,aes(x=ifelse(variable=="Masculino",-value,value),y=Agegroup,fill=variable))+
+  geom_bar(stat="identity",position = "stack")+
+  geom_text(aes(label = value), position = position_dodge(width = .5), hjust=-0.1, colour = "black",size=6)+
+  facet_wrap(~clas, scales = "free_x",ncol=2)+
+  theme_classic()+
+  theme(legend.position="bottom")+
+  theme(axis.text.x = element_text(color = "grey20", size = 16, angle = 0, hjust = .5, vjust = .5, face = "plain"),
+        axis.text.y = element_text(color = "grey20", size = 16, angle = 0, hjust = 1, vjust = 0, face = "plain"),  
+        axis.title.x = element_text(color = "grey20", size = 20, angle = 0, hjust = .5, vjust = 0, face = "plain"),
+        axis.title.y = element_text(color = "grey20", size = 20, angle = 90, hjust = .5, vjust = .5, face = "plain"),
+        legend.text=element_text(size = 20),
+        text=element_text(size = 20),
+        title = element_text(size = 20),
+        plot.title = element_text(hjust = 0.5),
+        strip.text = element_text(size=20))+
+  labs(title=paste0("Casos suspeitos e confirmados de cólera por faixa etária. Haiti, até ",format.Date(max(db1$date,na.rm=T),format="%d %b %Y")),y="Faixa etária",x="Número de casos",fill="")+
+  scale_fill_brewer(palette = "Set2")+
+  scale_x_continuous(labels = abs)
+
+
+```
+
+## Taxa de letalidade
+```{r echo=FALSE, results='asis',ft.left=1.2, ft.top=1.7,fig.width=18, fig.height=7}
+df2=aggregate(list(db1[which(db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL"),]$Suspected.cases,db1[which(db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL"),]$Confirmed.deaths),list(db1[which(db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL"),]$dateweek),sum,na.rm=T)
+names(df2)=c("date","cases","deaths")
+
+ggplot(df2,aes(x=date,y=deaths/cases))+
+  geom_bar(stat="identity",fill="#4472C4")+
+  geom_text(aes(label = round(deaths/cases*100,1)), position = position_dodge(width = .9), vjust=0, colour = "black",size=6)+
+  theme_classic()+
+  theme(axis.text.x = element_text(color = "grey20", size = 16, angle = 0, hjust = .5, vjust = .5, face = "plain"),
+        axis.text.y = element_text(color = "grey20", size = 16, angle = 0, hjust = 1, vjust = 0, face = "plain"),  
+        axis.title.x = element_text(color = "grey20", size = 20, angle = 0, hjust = .5, vjust = 0, face = "plain"),
+        axis.title.y = element_text(color = "grey20", size = 20, angle = 90, hjust = .5, vjust = .5, face = "plain"),
+        legend.text=element_text(size = 20),
+        text=element_text(size = 20),
+        title = element_text(size = 20),
+        plot.title = element_text(hjust = 0.5),
+        strip.text = element_text(size=20))+
+  labs(title=paste0("Taxa de letalidade por cólera por semana epidemiológica, Haiti. Até ",format.Date(max(db1$date,na.rm=T),format="%d %b %Y")),x="Semana epidemiológica",y="Taxa de letalidade (%)",fill="")+
+  scale_fill_brewer(palette = "Set2")+
+  scale_x_date(date_breaks = "2 weeks",expand=c(0,0),date_labels = "SE%U")+
+  scale_y_continuous(labels = scales::percent)
+
+```
+
+
+## Casos de cólera no Haiti por departamento
+
+```{r echo=FALSE, results='asis',ft.left=1.2, ft.top=1.7,fig.width=18, fig.height=7}
+df3=aggregate(list(db1[which(db1$Country.Territory=="Haiti" & db1$Admin1!="TOTAL" & db1$Admin1!="Undetermined" & db1$Admin1!="Prison"),]$Confirmed.cases,db1[which(db1$Country.Territory=="Haiti" & db1$Admin1!="TOTAL" & db1$Admin1!="Undetermined" & db1$Admin1!="Prison"),]$Suspected.cases),list(db1[which(db1$Country.Territory=="Haiti" & db1$Admin1!="TOTAL" & db1$Admin1!="Undetermined" & db1$Admin1!="Prison"),]$date,db1[which(db1$Country.Territory=="Haiti" & db1$Admin1!="TOTAL" & db1$Admin1!="Undetermined" & db1$Admin1!="Prison"),]$Admin1),sum,na.rm=T)
+names(df3)=c("date","admin1","Confirmado","Suspeito")
+df3=df3[df3$date==max(df3$date,na.rm = T),]
+df3$date=NULL
+
+df3=melt(df3,id="admin1")
+df3$perc=NA
+for(i in unique(df3$admin1)){
+  for(j in unique(df3[df3$admin1==i,]$variable)){
+    df3[df3$admin1==i & df3$variable==j,]$perc=df3[df3$admin1==i & df3$variable==j,]$value/sum(df3[df3$admin1==i,]$value)
+  }
+}
+
+ggplot(df3,aes(x=admin1,y=value,fill=variable))+
+  geom_bar(stat="identity",position = position_fill(reverse = T))+
+  geom_text(aes(x=admin1,y=perc,label=value,vjust=1),size=7,colour = "black")+
+  theme_classic()+
+  theme(legend.position = "bottom")+
+  theme(axis.text.x = element_text(color = "grey20", size = 16, angle = 0, hjust = .5, vjust = .5, face = "plain"),
+        axis.text.y = element_text(color = "grey20", size = 16, angle = 0, hjust = 1, vjust = 0, face = "plain"),  
+        axis.title.x = element_text(color = "grey20", size = 20, angle = 0, hjust = .5, vjust = 0, face = "plain"),
+        axis.title.y = element_text(color = "grey20", size = 20, angle = 90, hjust = .5, vjust = .5, face = "plain"),
+        legend.text=element_text(size = 20),
+        text=element_text(size = 20),
+        title = element_text(size = 20),
+        plot.title = element_text(hjust = 0.5),
+        strip.text = element_text(size=20))+
+  labs(title=paste0("Casos suspeitos e confirmados de cólera por departamento, Haiti. Até ",format.Date(max(db1$date,na.rm=T),format="%d %b %Y")),x="Departamento",y="Porcentagem de casos",fill="")+
+  scale_fill_brewer(palette = "Paired")+
+  scale_y_continuous(labels = scales::percent,expand = c(0,0))
+
+```

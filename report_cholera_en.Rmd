@@ -1,0 +1,242 @@
+---
+output: 
+  powerpoint_presentation:
+    reference_doc: template.pptx
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,fig.align = "center")
+library(ggplot2)
+library(lubridate)
+library(reshape2)
+
+Sys.setlocale("LC_TIME","C")
+
+db1=read.csv("/home/urstudio/cholera/database.csv");db1$date=as.Date(db1$date)
+db2=read.csv("/home/urstudio/cholera/database_age_conf.csv");db2$date=as.Date(db2$date)
+db3=read.csv("/home/urstudio/cholera/database_epicurve.csv");db3$date=as.Date(db3$Date)
+db4=read.csv("/home/urstudio/cholera/database_age.csv");db4$date=as.Date(db4$date)
+
+db2$total=db2$Male+db2$Female
+
+date=data.frame(dateweek=seq.Date(from=as.Date("2021-12-01"),to=Sys.Date(),by="day"))
+date$ew=paste0(epiweek(date$dateweek),".",epiyear(date$dateweek))
+date=date[which(weekdays(date$dateweek)=="Monday"),c("dateweek","ew")]
+
+db1$ew=paste0(epiweek(db1$date),".",epiyear(db1$date))
+db3$ew=paste0(epiweek(db3$date),".",epiyear(db3$date))
+
+db1=merge(db1,date,by="ew",all.x=T)
+db3=merge(db3,date,by="ew",all.x=T)
+
+db1.1=db1[which(db1$date<=max(db1[weekdays(db1$date)=="Saturday",]$date)),]
+
+cases_var=round((sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" &  db1.1$dateweek==max(db1.1$dateweek),]$Confirmed.cases)-sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" & db1.1$dateweek==max(db1.1$dateweek)-7,]$Confirmed.cases))/sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" & db1.1$dateweek==max(db1.1$dateweek)-7,]$Confirmed.cases)*100,1)
+
+susp_var=round((sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" &  db1.1$dateweek==max(db1.1$dateweek),]$Suspected.cases)-sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" & db1.1$dateweek==max(db1.1$dateweek)-7,]$Suspected.cases))/sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" & db1.1$dateweek==max(db1.1$dateweek)-7,]$Suspected.cases)*100,1)
+
+death_var=round((sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" &  db1.1$dateweek==max(db1.1$dateweek),]$Confirmed.deaths)-sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" & db1.1$dateweek==max(db1.1$dateweek)-7,]$Confirmed.deaths))/sum(db1.1[db1.1$Country.Territory=="Haiti" & db1.1$Admin1=="TOTAL" & db1.1$dateweek==max(db1.1$dateweek)-7,]$Confirmed.deaths)*100,1)
+
+db1.2=db1[with(db1,order(date,decreasing = F)),]
+db1.2=db1.2[which(db1.2$Country.Territory=="Haiti" & db1.2$Admin1=="TOTAL"),]
+db1.2$new_susp=db1.2$Suspected.cases-lag(db1.2$Suspected.cases)
+db1.2$new_susp=ifelse(db1.2$new_susp<0,0,db1.2$new_susp)
+
+max_date <- max(as.Date(db1$date))
+max_date_on_file <- format(max_date, format = "%B %d, %Y", locale = "en")
+
+```
+---
+title: "Cholera"
+subtitle: "As of `r max_date_on_file
+`"
+
+output: 
+  powerpoint_presentation:
+    reference_doc: template.pptx
+---
+
+
+## Summary - Situation Report: Cholera in Haiti
+
+::: {.columns data-latex=""}
+::: {.column data-latex="{0.50\\textwidth}"}
+
+```{r echo=FALSE, fig.height=100, fig.width=11, fig.asp=0.6,  message=FALSE, warning=FALSE}
+
+ggplot()+
+  geom_bar(data=db3,aes(x=dateweek,y=Suspected),stat="identity",fill="#4472C4")+
+  theme_classic()+
+  theme(legend.position=c(0.8, 0.9))+
+  theme(axis.text.x = element_text(color = "grey20", size = 16, angle = 0, hjust = .5, vjust = .5, face = "plain"),
+        axis.text.y = element_text(color = "grey20", size = 16, angle = 0, hjust = 1, vjust = 0, face = "plain"),  
+        axis.title.x = element_text(color = "grey20", size = 20, angle = 0, hjust = .5, vjust = 0, face = "plain"),
+        axis.title.y = element_text(color = "grey20", size = 20, angle = 90, hjust = .5, vjust = .5, face = "plain"),
+        legend.text=element_text(size = 20),
+        text=element_text(size = 20),
+        title = element_text(size = 20),
+        plot.title = element_text(hjust = 0.5),
+        strip.text = element_text(size=20))+
+  labs(title=paste0("Suspected cases of cholera by epiweek, Haiti. As of ",format.Date(max(db3$date,na.rm=T),format="%d %b %Y")),x="Epidemiological week (onset of symptoms)",y="Number of suspected cases",fill="")+
+  scale_fill_brewer(palette = "Set2")+
+  scale_x_date(date_breaks = "2 weeks",expand=c(0,0),date_labels = "EW%U")+
+  scale_y_continuous(expand = c(0,0))
+
+
+# ggplot()+
+#   geom_bar(data=db3,aes(x=dateweek,y=Suspected,fill="Date of onset of symptoms"),stat="identity",alpha=0.3)+
+#   geom_bar(data=db1.2,aes(x=dateweek,y=new_susp,fill="Date of report"),stat="identity",alpha=0.2)+
+#   theme_classic()+
+#   theme(legend.position = "bottom")+
+#   #theme(legend.position=c(0.8, 0.9))+
+#   theme(axis.text.x = element_text(color = "grey20", size = 16, angle = 0, hjust = .5, vjust = .5, face = "plain"),
+#         axis.text.y = element_text(color = "grey20", size = 16, angle = 0, hjust = 1, vjust = 0, face = "plain"),  
+#         axis.title.x = element_text(color = "grey20", size = 20, angle = 0, hjust = .5, vjust = 0, face = "plain"),
+#         axis.title.y = element_text(color = "grey20", size = 20, angle = 90, hjust = .5, vjust = .5, face = "plain"),
+#         legend.text=element_text(size = 20),
+#         text=element_text(size = 20),
+#         title = element_text(size = 20),
+#         plot.title = element_text(hjust = 0.5),
+#         strip.text = element_text(size=20))+
+#   labs(title=paste0("Suspected cases of cholera by epiweek, Haiti. As of ",format.Date(max(db3$date,na.rm=T),format="%d %b %Y")),x="Epidemiological week (onset of symptoms)",y="Number of suspected cases",fill="")+
+#   scale_fill_manual("",values=c("Date of onset of symptoms"="#4472C4","Date of report"="grey"))+
+#   scale_x_date(date_breaks = "2 weeks",expand=c(0,0),date_labels = "EW%U")+
+#   scale_y_continuous(expand = c(0,0))
+
+```
+
+
+:::
+::: {.column data-latex="{0.50\\textwidth}"}
+
+**Total suspected cases:** `r db1[db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL" & db1$date==max(db1$date,na.rm=T),]$Suspected.cases`
+
+`r ifelse(susp_var<0,paste0("decreasing: ",susp_var,"%"),paste0("increasing: ",susp_var,"%"))`
+
+\
+**Total confirmed cases:** `r db1[db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL" & db1$date==max(db1$date,na.rm=T),]$Confirmed.cases`
+
+`r ifelse(cases_var<0,paste0("decreasing: ",cases_var,"%"),paste0("increasing: ",cases_var,"%"))`
+
+\
+**Deaths:** `r db1[db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL" & db1$date==max(db1$date,na.rm=T),]$Confirmed.deaths`
+
+`r ifelse(death_var<0,paste0("decreasing: ",death_var,"%"),paste0("increasing: ",death_var,"%"))`
+
+\
+**CFR in suspected cases:** `r paste0(round(db1[db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL" & db1$date==max(db1$date,na.rm=T),]$Confirmed.deaths/db1[db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL" & db1$date==max(db1$date,na.rm=T),]$Suspected.cases*100,1),"%")`
+
+**CFR in hospitalized cases:** `r paste0(round(db1[db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL" & db1$date==max(db1$date,na.rm=T),]$Hospitalized.deaths/db1[db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL" & db1$date==max(db1$date,na.rm=T),]$Hospitalized.cases*100,1),"%")`
+
+\
+**Demographic information**
+
+- `r paste0(round(sum(db2[db2$date==max(db2$date),]$Male)/sum(db2[db2$date==max(db2$date),]$total)*100,0),"%")`  are male
+
+- `r paste0(round(sum(db2[db2$date==max(db2$date) & (db2$Agegroup=="<1y" | db2$Agegroup=="1-4y" | db2$Agegroup=="5-9y" | db2$Agegroup=="10-14y" | db2$Agegroup=="15-19y"),]$total)/sum(db2[db2$date==max(db2$date),]$total)*100,0),"%")`  <20 years old
+
+:::
+:::
+
+## Demographic information
+
+```{r echo=FALSE, results='asis',ft.left=1.2, ft.top=1.7,fig.width=20, fig.height=8}
+df1=db4[db4$date==max(db4$date),c("Agegroup","Male","Female")]
+df1=reshape2::melt(df1,id="Agegroup")
+df1$Agegroup=factor(df1$Agegroup,levels=c("<1y","1-4y","5-9y","10-14y","15-19y","20-29y","30-39y","40-49y","50-59y","60-69y","70-79y","80y+"))
+
+
+df2=db2[db2$date==max(db2$date),c("Agegroup","Male","Female")]
+df2=reshape2::melt(df2,id="Agegroup")
+df2$Agegroup=factor(df2$Agegroup,levels=c("<1y","1-4y","5-9y","10-14y","15-19y","20-29y","30-39y","40-49y","50-59y","60-69y","70-79y","80y+"))
+
+df1$clas=1
+df2$clas=2
+
+df=rbind(df1,df2)
+df$clas=factor(df$clas,levels=c(1,2),labels=c("Suspected cases","Confirmed cases"))
+
+ggplot(df,aes(x=ifelse(variable=="Male",-value,value),y=Agegroup,fill=variable))+
+  geom_bar(stat="identity",position = "stack")+
+  geom_text(aes(label = value), position = position_dodge(width = .5), hjust=-0.1, colour = "black",size=6)+
+  facet_wrap(~clas, scales = "free_x",ncol=2)+
+  theme_classic()+
+  theme(legend.position="bottom")+
+  theme(axis.text.x = element_text(color = "grey20", size = 16, angle = 0, hjust = .5, vjust = .5, face = "plain"),
+        axis.text.y = element_text(color = "grey20", size = 16, angle = 0, hjust = 1, vjust = 0, face = "plain"),  
+        axis.title.x = element_text(color = "grey20", size = 20, angle = 0, hjust = .5, vjust = 0, face = "plain"),
+        axis.title.y = element_text(color = "grey20", size = 20, angle = 90, hjust = .5, vjust = .5, face = "plain"),
+        legend.text=element_text(size = 20),
+        text=element_text(size = 20),
+        title = element_text(size = 20),
+        plot.title = element_text(hjust = 0.5),
+        strip.text = element_text(size=20))+
+  labs(title=paste0("Suspected and confirmed cases of cholera by age group. Haiti, as of ",format.Date(max(db1$date,na.rm=T),format="%d %b %Y")),y="Age group",x="Number of cases",fill="")+
+  scale_fill_brewer(palette = "Set2")+
+  scale_x_continuous(labels = abs)
+
+
+```
+
+## Case fatality rate
+```{r echo=FALSE, results='asis',ft.left=1.2, ft.top=1.7,fig.width=18, fig.height=7}
+df2=aggregate(list(db1[which(db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL"),]$Suspected.cases,db1[which(db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL"),]$Confirmed.deaths),list(db1[which(db1$Country.Territory=="Haiti" & db1$Admin1=="TOTAL"),]$dateweek),sum,na.rm=T)
+names(df2)=c("date","cases","deaths")
+
+ggplot(df2,aes(x=date,y=deaths/cases))+
+  geom_bar(stat="identity",fill="#4472C4")+
+  geom_text(aes(label = round(deaths/cases*100,1)), position = position_dodge(width = .9), vjust=0, colour = "black",size=6)+
+  theme_classic()+
+  theme(axis.text.x = element_text(color = "grey20", size = 16, angle = 0, hjust = .5, vjust = .5, face = "plain"),
+        axis.text.y = element_text(color = "grey20", size = 16, angle = 0, hjust = 1, vjust = 0, face = "plain"),  
+        axis.title.x = element_text(color = "grey20", size = 20, angle = 0, hjust = .5, vjust = 0, face = "plain"),
+        axis.title.y = element_text(color = "grey20", size = 20, angle = 90, hjust = .5, vjust = .5, face = "plain"),
+        legend.text=element_text(size = 20),
+        text=element_text(size = 20),
+        title = element_text(size = 20),
+        plot.title = element_text(hjust = 0.5),
+        strip.text = element_text(size=20))+
+  labs(title=paste0("CFR of cholera by epiweek, Haiti. As of ",format.Date(max(db1$date,na.rm=T),format="%d %b %Y")),x="Epidemiological week",y="CFR (%)",fill="")+
+  scale_fill_brewer(palette = "Set2")+
+  scale_x_date(date_breaks = "2 weeks",expand=c(0,0),date_labels = "EW%U")+
+  scale_y_continuous(labels = scales::percent)
+
+```
+
+
+## Cholera cases in Haiti by department
+
+```{r echo=FALSE, results='asis',ft.left=1.2, ft.top=1.7,fig.width=18, fig.height=7}
+df3=aggregate(list(db1[which(db1$Country.Territory=="Haiti" & db1$Admin1!="TOTAL" & db1$Admin1!="Undetermined" & db1$Admin1!="Prison"),]$Confirmed.cases,db1[which(db1$Country.Territory=="Haiti" & db1$Admin1!="TOTAL" & db1$Admin1!="Undetermined" & db1$Admin1!="Prison"),]$Suspected.cases),list(db1[which(db1$Country.Territory=="Haiti" & db1$Admin1!="TOTAL" & db1$Admin1!="Undetermined" & db1$Admin1!="Prison"),]$date,db1[which(db1$Country.Territory=="Haiti" & db1$Admin1!="TOTAL" & db1$Admin1!="Undetermined" & db1$Admin1!="Prison"),]$Admin1),sum,na.rm=T)
+names(df3)=c("date","admin1","Confirmed","Suspected")
+df3=df3[df3$date==max(df3$date,na.rm = T),]
+df3$date=NULL
+
+df3=melt(df3,id="admin1")
+df3$perc=NA
+for(i in unique(df3$admin1)){
+  for(j in unique(df3[df3$admin1==i,]$variable)){
+    df3[df3$admin1==i & df3$variable==j,]$perc=df3[df3$admin1==i & df3$variable==j,]$value/sum(df3[df3$admin1==i,]$value)
+  }
+}
+
+ggplot(df3,aes(x=admin1,y=value,fill=variable))+
+  geom_bar(stat="identity",position = position_fill(reverse = T))+
+  geom_text(aes(x=admin1,y=perc,label=value,vjust=1),size=7,colour = "black")+
+  theme_classic()+
+  theme(legend.position = "bottom")+
+  theme(axis.text.x = element_text(color = "grey20", size = 16, angle = 0, hjust = .5, vjust = .5, face = "plain"),
+        axis.text.y = element_text(color = "grey20", size = 16, angle = 0, hjust = 1, vjust = 0, face = "plain"),  
+        axis.title.x = element_text(color = "grey20", size = 20, angle = 0, hjust = .5, vjust = 0, face = "plain"),
+        axis.title.y = element_text(color = "grey20", size = 20, angle = 90, hjust = .5, vjust = .5, face = "plain"),
+        legend.text=element_text(size = 20),
+        text=element_text(size = 20),
+        title = element_text(size = 20),
+        plot.title = element_text(hjust = 0.5),
+        strip.text = element_text(size=20))+
+  labs(title=paste0("Suspected and confirmed cases of cholera by department, Haiti. As of ",format.Date(max(db1$date,na.rm=T),format="%d %b %Y")),x="Department",y="Percentage of cases",fill="")+
+  scale_fill_brewer(palette = "Paired")+
+  scale_y_continuous(labels = scales::percent,expand = c(0,0))
+
+```
